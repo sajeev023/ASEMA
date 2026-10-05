@@ -1,0 +1,20 @@
+# ASEMA local configuration (copy to `asema.config` and edit; `asema.config` is git-ignored).
+#
+# Every key can also be set with an environment variable (shown on the right) which wins over
+# this file. Relative paths are resolved against the working directory.
+
+# Directory containing the model-XXXXX-of-00048.safetensors shards.          ASEMA_SHARDS_PRIMARY
+shards_primary=models/DeepSeek-V4.1-Flash/shards
+
+# Optional second directory holding more shards (e.g. on another drive).      ASEMA_SHARDS_SECONDARY
+# Leave empty if all shards live in shards_primary.
+shards_secondary=
+
+# Directory containing model.safetensors.index.json / tokenizer.json.        ASEMA_MODEL_ROOT
+model_root=models/DeepSeek-V4.1-Flash
+
+# Hugging Face metadata directory (tokenizer.json, config.json).             ASEMA_HF_DIR
+hf_dir=models/DeepSeek-V4.1-Flash/hf
+
+# Synthetic MoE model used by the storage/runtime tests (generated locally).  ASEMA_SYNTHETIC_DIR
+synthetic_dir=examples/synthetic_moe/model_synthetic

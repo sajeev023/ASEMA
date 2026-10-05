@@ -1,0 +1,1076 @@
+{
+  "format": "ASEMA-SSF",
+  "version": 1,
+  "model_name": "Synthetic-MoE-4L-16E",
+  "base_architecture": "synthetic-sparse-moe",
+  "num_layers": 4,
+  "experts_per_layer": 16,
+  "active_experts_per_token": 2,
+  "hidden_dim": 128,
+  "ffn_dim": 512,
+  "num_heads": 4,
+  "total_parameters": 12582912,
+  "total_storage_bytes": 50331648,
+  "layers": [
+    {
+      "layer_id": 0,
+      "num_experts": 16,
+      "shared_weights_offset": 0,
+      "shared_weights_size": 0,
+      "shared_weights_file": "",
+      "experts": [
+        {
+          "layer": 0,
+          "expert": 0,
+          "storage_offset": 0,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "fb59100d6a637b2ef8957243f49cbb6fee3a109ba628ad78ece5777c5365115d",
+          "checksum_crc32": 2589796969,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 1,
+          "storage_offset": 786432,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "84071ee7dbe87b06d2d0fc229b642646865f7a91f40c803780e1e9c3a020af64",
+          "checksum_crc32": 3015155745,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 2,
+          "storage_offset": 1572864,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "eaace3e73d4ea26d7ac26b4e0f8e5217810fa30a307783cb5cd06f37520bf72e",
+          "checksum_crc32": 2531229040,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 3,
+          "storage_offset": 2359296,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "794186d1b4b520de891335a9666aadaa6104e805a28d486fd45977354abd633e",
+          "checksum_crc32": 1836241598,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 4,
+          "storage_offset": 3145728,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "b78b80a12f30c7933e5868a7283113c4469a9f8b9492efafba2e9dc4f812c45b",
+          "checksum_crc32": 3513635489,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 5,
+          "storage_offset": 3932160,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "74517e64f97fc87a0cd52eabc1da8c936127a47ce743b4a56b3b219237d17ca5",
+          "checksum_crc32": 2975404175,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 6,
+          "storage_offset": 4718592,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "d691664910734f4d1b8fe70258944215bde34cb274daf7dd389c88da661e2fd5",
+          "checksum_crc32": 3631358173,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 7,
+          "storage_offset": 5505024,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "69c8f8abeb77b0fd439b06c6f717a8840417c304352c7c3a229ea72ea6ddba38",
+          "checksum_crc32": 1368582810,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 8,
+          "storage_offset": 6291456,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "03ad54417f644c5ac244c06c3d1497a40a1d7fce7a1dbd0001bba3d2a1d81016",
+          "checksum_crc32": 3269282115,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 9,
+          "storage_offset": 7077888,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "dc7f0fb34583d9bc1e5016a3f50ed91b29b019a6e7f7f2f93988e264cbf69021",
+          "checksum_crc32": 1030378592,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 10,
+          "storage_offset": 7864320,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "107cedb8bb9a4fdfefcb2c0e45c956bcc6c745ca45851f2e3829a4f79a1c3c6e",
+          "checksum_crc32": 4279268456,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 11,
+          "storage_offset": 8650752,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "3fcaab28f239ca0911232edccd889a9f965d59df24e1ea0c4f05e3e0db021d90",
+          "checksum_crc32": 1273154259,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 12,
+          "storage_offset": 9437184,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "0f4f443902cc4e533809b5d6d16e09171f60c6550fda7649d8298a049a86cd85",
+          "checksum_crc32": 135865744,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 13,
+          "storage_offset": 10223616,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "e70d8441464d22f1e7a0817e9327b5aab9c429a2b21c358c5db714bbba540157",
+          "checksum_crc32": 4101836949,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 14,
+          "storage_offset": 11010048,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "02de497c7dd5c99e44bef55e99f580a64cbd0a1c5b920556cd03c3da31080523",
+          "checksum_crc32": 855348672,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 0,
+          "expert": 15,
+          "storage_offset": 11796480,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "07423e155421332e1e2d6282f829842c331d99bafb0ae3c50485b4be08cb46ba",
+          "checksum_crc32": 2761068069,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        }
+      ]
+    },
+    {
+      "layer_id": 1,
+      "num_experts": 16,
+      "shared_weights_offset": 0,
+      "shared_weights_size": 0,
+      "shared_weights_file": "",
+      "experts": [
+        {
+          "layer": 1,
+          "expert": 0,
+          "storage_offset": 12582912,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "f72fb929345e4c8d9f27b4c757291cf35b7e3440da859fb2d6fc6d4df50b16a1",
+          "checksum_crc32": 2191503867,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 1,
+          "storage_offset": 13369344,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "e6c88b078f4745cbc5a1eeaf8f9fbe59495ed0f8fdcea27e3b80169df8b3a273",
+          "checksum_crc32": 3107910690,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 2,
+          "storage_offset": 14155776,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "9fe6a1282716aad3004e572717895cc9cd7bf4ef1647ad0e1051832af37b68f5",
+          "checksum_crc32": 102832995,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 3,
+          "storage_offset": 14942208,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "1675885707c1b15506534a957375bde4f20b942f1b32b9704d072dd3099ea1d9",
+          "checksum_crc32": 3503873183,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 4,
+          "storage_offset": 15728640,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "e6a8732a135a17952827d16049cb3e61c96a2595e9270ec414d871adc532fbdf",
+          "checksum_crc32": 908406999,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 5,
+          "storage_offset": 16515072,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "53ab1938c4b03eaced872b08a720ff48d28d947355efaf72a6f4bc93487bdd46",
+          "checksum_crc32": 721454097,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 6,
+          "storage_offset": 17301504,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "276717ccfb606aac209b8522a4d46c2f5d463cc15be6371c899ce9f979cb7655",
+          "checksum_crc32": 120623730,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 7,
+          "storage_offset": 18087936,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "5f018ad07562dea03e97c410237269c14efc0d00b8467fd79d385a7ad2300a37",
+          "checksum_crc32": 3643480524,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 8,
+          "storage_offset": 18874368,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "345f5c90b760cf5bfee9eab5f94b041f85390b543aeecbc50b662ec60fbda735",
+          "checksum_crc32": 3736140263,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 9,
+          "storage_offset": 19660800,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "55b3c8e0bc8945d09ce9a5081f515448e6e1cb614ed7c7f043a03fa7226cc089",
+          "checksum_crc32": 1937271272,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 10,
+          "storage_offset": 20447232,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "eecfc7e2809733dd0d46bb3742cac6f530d05c3b401c43c80f72125320d6aa19",
+          "checksum_crc32": 1855168274,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 11,
+          "storage_offset": 21233664,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "b73acfc35ff7d765b9ee286f9fe6a2756940370199c35f865b49175fe52a6161",
+          "checksum_crc32": 2975559340,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 12,
+          "storage_offset": 22020096,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "74adff33cc6f5d3f5930dc4c555f655bf9c5039fdef9c92921a7b2d089d450fd",
+          "checksum_crc32": 4070756252,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 13,
+          "storage_offset": 22806528,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "e49ee508690979a2ee9ce3cd7a065309c333f4e3520fb65b1a790ff149bc898e",
+          "checksum_crc32": 2130437073,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 14,
+          "storage_offset": 23592960,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "5202ef78c34a3b02557866348e6771cc0a1cc8e4b67467bbd98b5e724ef082cb",
+          "checksum_crc32": 1592341568,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 1,
+          "expert": 15,
+          "storage_offset": 24379392,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "30fba3e4212796d40294a123414479f71c32f479fd808fb66c6cdc06147a2f55",
+          "checksum_crc32": 1551559886,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        }
+      ]
+    },
+    {
+      "layer_id": 2,
+      "num_experts": 16,
+      "shared_weights_offset": 0,
+      "shared_weights_size": 0,
+      "shared_weights_file": "",
+      "experts": [
+        {
+          "layer": 2,
+          "expert": 0,
+          "storage_offset": 25165824,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "dcc0490cef52feaa7d25af63d82bb725c04103f4c8fd945c9d1e1bbf48344a21",
+          "checksum_crc32": 2805731685,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 1,
+          "storage_offset": 25952256,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "ac33e4b39c0b57259070419dd531245ce173c5919bad915cee0d80f54c0f9390",
+          "checksum_crc32": 961293980,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 2,
+          "storage_offset": 26738688,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "e88af0e20a963f8d67f4f84d8592374c701d5a6905a4c674079ef90a6af249fe",
+          "checksum_crc32": 1908255174,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 3,
+          "storage_offset": 27525120,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "0b78b8d99a6ee76939dc1f64e2db75904a0d16bee3a1d1271b7c1ec5b49a6ce9",
+          "checksum_crc32": 2531463500,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 4,
+          "storage_offset": 28311552,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "8d591cd022e0b0cf8eca73c87f5b8ad3142385ca0756ceb7e47128733f753d36",
+          "checksum_crc32": 3809074131,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 5,
+          "storage_offset": 29097984,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "314c75dc228578ca828efd0601366769016f73cee71dba3fda7ea29d0993851a",
+          "checksum_crc32": 879614608,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 6,
+          "storage_offset": 29884416,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "fc4427c6538645b28807ee14a99f0c78ce220e31293ea98ddb3c61c2685448e4",
+          "checksum_crc32": 601195710,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 7,
+          "storage_offset": 30670848,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "072befbef601be96b7a636868e4adfbbe48e9819fffa5d4ec1c044efa17d5f6c",
+          "checksum_crc32": 3358118614,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 8,
+          "storage_offset": 31457280,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "d9becc2e5f1578538731a6c36c3de7611c443ce6ec4d983507805d5d5f31c5df",
+          "checksum_crc32": 4064770744,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 9,
+          "storage_offset": 32243712,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "93295621efaf013b03c40bc568057f0d65b5627ddffa1eaa69e9ce9c7aa9734f",
+          "checksum_crc32": 1434988341,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 10,
+          "storage_offset": 33030144,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "c5e083497e0682aa8ff7948044901cd0e6da79db987517f2e452d5522831349c",
+          "checksum_crc32": 1254844858,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 11,
+          "storage_offset": 33816576,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "2dfff2424320bdace2de3c9b078f8a9c4da0a9e763d26f5f97a88c3530e7bd5e",
+          "checksum_crc32": 1641631088,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 12,
+          "storage_offset": 34603008,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "88e4f2d87afa95ab7cd6fbbeca542570595633e66dd295a03e630f4ee2eccd72",
+          "checksum_crc32": 2244619474,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 13,
+          "storage_offset": 35389440,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "5db1569a507e653025450e96deeab265aaa93cbbcc52ab1e2ca88f445ff3b010",
+          "checksum_crc32": 3563552503,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 14,
+          "storage_offset": 36175872,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "b017e3df8cd7f6af8d51634614afa30e9f31facff5d6e59b959ba2ce8941f630",
+          "checksum_crc32": 2398520241,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 2,
+          "expert": 15,
+          "storage_offset": 36962304,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "0d2b92760d25755f292eb55be0bd4e02bfd8c02d60bacf4c85ce901a37af52c7",
+          "checksum_crc32": 2725453419,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        }
+      ]
+    },
+    {
+      "layer_id": 3,
+      "num_experts": 16,
+      "shared_weights_offset": 0,
+      "shared_weights_size": 0,
+      "shared_weights_file": "",
+      "experts": [
+        {
+          "layer": 3,
+          "expert": 0,
+          "storage_offset": 37748736,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "b14a5ab783673d5d92d6ae803885a272fe8b29c5924eff22d379cecf209ad1b3",
+          "checksum_crc32": 3309287590,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 1,
+          "storage_offset": 38535168,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "c087d0744270f2f156a73c354464d9af1aab1ab10a69efc2ca720d00e4f06f4e",
+          "checksum_crc32": 2983371285,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 2,
+          "storage_offset": 39321600,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "194fd57cbab27ab6a9ef8a78b03bfed7d7bff0040e1a3f972d529b3f48100c6f",
+          "checksum_crc32": 3785425266,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 3,
+          "storage_offset": 40108032,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "6ba626dab7e713629af8e9ba7262b888049ba3da2cc15c2aa64cd960b64b2e44",
+          "checksum_crc32": 1129525576,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 4,
+          "storage_offset": 40894464,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "598884ed9909b93bf0597b0edd58c9e82ad814552a7820b9c6b02ebaed076310",
+          "checksum_crc32": 257024721,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 5,
+          "storage_offset": 41680896,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "2c23ac18f0f9c734ab7bb206b60708a491ef048ef93676d5224e74525006d7bc",
+          "checksum_crc32": 3425710800,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 6,
+          "storage_offset": 42467328,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "69ed5ae50ad04166c99a2173a643477d91faaa1952a002745ca0573dad8157c6",
+          "checksum_crc32": 2330650954,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 7,
+          "storage_offset": 43253760,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "b4e9bc214995fdcd5102c0e047e5f6dbbf2c227ed14bc6fcac5a9c452c0107d3",
+          "checksum_crc32": 3300753800,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 8,
+          "storage_offset": 44040192,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "03b34006440c5f07219485ea1c3fb0fbabba86f1f7da28d47fb360682b7a150b",
+          "checksum_crc32": 177054457,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 9,
+          "storage_offset": 44826624,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "56093895ef2524558d703b031fd15730e6c6e36bb38ba9a80b2854f55ccbfce8",
+          "checksum_crc32": 2939832956,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 10,
+          "storage_offset": 45613056,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "5fdf67bc928b24d4f4ba5aa8e0e20a64df7403f0f3231c4e75e2b0397213ded3",
+          "checksum_crc32": 2676860192,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 11,
+          "storage_offset": 46399488,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "61782dacf15fc04b13bae2c7d740e4bcac0bcb4ae7669c9632bdd43f1d2136b9",
+          "checksum_crc32": 832663257,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 12,
+          "storage_offset": 47185920,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "500ffc9f49733c353bae15d9491bdaaf1154810bbaf17a63f2bd9ca61648f6c1",
+          "checksum_crc32": 2864940049,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 13,
+          "storage_offset": 47972352,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "0b2151d8e1645c27d2f830c775d226a18a33ae5ef250711a470c9e835c66b8a6",
+          "checksum_crc32": 2481414503,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 14,
+          "storage_offset": 48758784,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "44be8204a42f8d56095f32ded3cae64f7318b76e54d04fe799d08c33cac74de3",
+          "checksum_crc32": 3460666849,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        },
+        {
+          "layer": 3,
+          "expert": 15,
+          "storage_offset": 49545216,
+          "storage_length": 786432,
+          "alignment": 64,
+          "dtype": "float32",
+          "quant_type": "none",
+          "checksum_sha256": "d658169bb0defffae0f1e10002a7443677485a779b11b47f91d011b094abe9f8",
+          "checksum_crc32": 1250180811,
+          "tensor_shape": [
+            3,
+            128,
+            512
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+# ASEMA .gitignore
+build/
+build_clean/
+build_asan/
+.cache/
+.ninja_*
+ninja.log
+*.o
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.lib
+*.a
+*.bin
+*.npy
+*.safetensors
+*.tmp
+*.log
+reports/
+.vscode/
+.idea/
+dist/
+
+# --- Local configuration (contains machine-specific paths) ---
+asema.config
+
+# --- Model data: never commit weights, checkpoints or model-release files ---
+models/
+examples/real_model/
+*.safetensors
+*.part
+*.progress.json
+*.npz
+*.asema
+*.gguf
+*.pt
+*.pth
+checkpoint_audit.json
+checkpoint_status.json
+remote_shard_sizes.json
+
+# --- Generated outputs / logs / dumps ---
+benchmark_report.txt
+*.dmp
+*.stackdump
+*.etl
+hs_err_pid*
+core.*
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- Local developer scratch (may contain private paths) ---
+scratch_*.py
+/rank_words.py
+/test_prompt.py
+
+# --- IDE / agent state ---
+.gemini/
+.antigravity/
+.claude/
+.cursor/
+.DS_Store
+Thumbs.db
+
+# Historical agent-generated reports (contain superseded measurements)
+/FINAL_RELEASE_REPORT.md
+docs/FINAL_RELEASE_REPORT.md
+
+# Stray / generated files
+/fp8_lut.h
+Testing/

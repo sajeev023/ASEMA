@@ -1,0 +1,18 @@
+LICENSE PLACEHOLDER - NO LICENSE HAS BEEN CHOSEN YET
+
+This repository is being prepared for possible open-sourcing. The project owner has not yet
+selected a license, so until this file is replaced the code is "all rights reserved" and may
+not be used, copied, modified, or redistributed.
+
+Before any publication the owner must:
+
+  1. Decide on the license for the ASEMA source code (for example MIT or Apache-2.0).
+     A draft MIT text from an earlier session is kept for convenience in
+     docs/LICENSE_CANDIDATE_MIT.txt. It is a candidate only and has NOT been adopted.
+  2. Replace this file with the chosen license text and set the correct copyright holder.
+  3. Confirm that every redistributed third-party component allows redistribution
+     (see THIRD_PARTY in docs/OPEN_SOURCE_READINESS.md).
+
+Model weights are NOT part of this project and are NOT covered by any license granted here.
+The DeepSeek-V4.1-Flash checkpoint, tokenizer and related files are governed by their own
+license from their authors; obtain them from the official source.

@@ -1,0 +1,2 @@
+{"event":"EXPERT_LOAD_END","ts":2458629340500,"token":1,"layer":0,"expert":0,"latency_us":500,"bytes":1024,"success":true}
+{"event":"EXPERT_CACHE_HIT","ts":2458629341500,"token":1,"layer":0,"expert":1,"latency_us":5,"success":true}
