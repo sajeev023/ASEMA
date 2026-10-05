@@ -62,6 +62,9 @@ public:
     }
     int last_stop_token_id() const { return runner_ ? runner_->last_stop_token_id() : -1; }
 
+    // True only if the Direct3D 11 expert kernel initialised and is in use (not a CPU fallback).
+    bool gpu_active() const { return runner_ && runner_->is_gpu_accelerated(); }
+
     bool is_loaded() const { return is_loaded_; }
     int num_layers() const { return runner_ ? runner_->num_layers() : 0; }
 

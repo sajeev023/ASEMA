@@ -81,11 +81,11 @@ build\asema.exe                            :: same as "asema chat"
 build\asema.exe chat [--max-tokens N]      :: interactive chat ("exit"/"quit" to leave; Ctrl+C stops a reply)
 build\asema.exe models                     :: READY / MODEL NOT FOUND / CHECKPOINT INCOMPLETE
 build\asema.exe info                       :: model, GPU, RAM, configured paths
-build\asema.exe doctor                     :: check CPU/GPU/RAM/paths
+build\asema.exe doctor                     :: CPU/RAM/GPU/model/shards/storage/permissions -> READY or PROBLEM (+ fixes)
 build\asema.exe verify-model               :: check shards and index
 build\asema.exe generate "hi" --max-tokens 32 --greedy --telemetry
 build\asema.exe profile                    :: per-layer timing of a warm decode step
-build\asema.exe bench --tokens 50          :: reproducible decode benchmark
+build\asema.exe benchmark --tokens 50      :: reproducible decode benchmark (alias: bench)
 build\asema.exe --help | --version
 ```
 

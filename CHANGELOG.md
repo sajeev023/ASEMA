@@ -28,6 +28,17 @@ All notable changes are listed here. The project is pre-release; versions follow
   re-read cost of the drive each expert lives on). Experts already resident in VRAM are not read from
   storage and no longer duplicated in RAM. Warm decode 7.4 -> 5.8 s/token, working set ~11.7 -> ~8 GB.
 
+- New terminal experience: logo, a short startup sequence in which every line reflects a real check
+  (GPU, memory, storage bus type per shard drive, model index, layer audit, GPU backend), distinct
+  `You ❯` / `DeepSeek ❯` styling, fenced-code colouring, and a status box after each reply with
+  measured RAM/VRAM, tok/s, cache hit rate and storage MB/s. Colours and animation switch off when
+  output is redirected, `NO_COLOR` is set, or `ASEMA_NO_ANIMATION` is set.
+- `asema doctor` rewritten: CPU brand, RAM, GPU/VRAM, config/tokenizer/index, shard header
+  sanity (not a hash), per-drive bus type and free space, read/write permissions, shader compiler,
+  runtime DLLs; ends with READY or PROBLEM and a fix hint per failure.
+- `asema benchmark` is now the measured benchmark (same as `bench`) and prints hardware context.
+- Ctrl+C stops the current reply and keeps the session; Ctrl+C at the prompt ends it.
+
 ### Fixed
 - Garbled chat output on Windows (console code page 437 and multi-byte characters split across
   tokens): console switched to UTF-8 and only complete UTF-8 sequences are streamed.

@@ -13,6 +13,7 @@ struct DoctorCheckItem {
     std::string name;
     bool passed{false};
     std::string details;
+    std::string hint;   // what to do about it when passed == false
 };
 
 struct DoctorReport {

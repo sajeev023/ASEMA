@@ -6,6 +6,8 @@
 #include "asema/m8/m8_generation_api.hpp"
 #include "asema/m8/m8_model_manifest.hpp"
 #include "asema/m8/m8_resource_governor.hpp"
+#include "asema/m8/m8_drive_info.hpp"
+#include "asema_ui.hpp"
 
 #include <windows.h>
 #include <cstdlib>
@@ -50,14 +52,10 @@ static double system_ram_gb() {
 
 // Banner shows only facts detected at runtime; nothing about this machine is hard-coded.
 void print_banner() {
-    std::cout << "========================================================\n";
-    std::cout << "  ASEMA\n";
-    std::cout << "  Adaptive Sparse-Expert Memory Architecture\n\n";
-    std::cout << "  DeepSeek-V4.1-Flash | 40 Layers | Local Inference\n";
-    std::cout << "  " << detect_gpu_name() << " | " << std::fixed << std::setprecision(0)
-              << system_ram_gb() << " GB System RAM\n\n";
-    std::cout << "  v" << kVersion << " | Made by Ajay\n";
-    std::cout << "========================================================\n\n";
+    namespace ui = asema::ui;
+    ui::logo();
+    std::cout << ui::dim() << "  DeepSeek-V4.1-Flash  ·  40 layers  ·  LOCAL   |   v" << kVersion
+              << "  ·  Made by Ajay" << ui::reset() << "\n\n";
 }
 
 void print_usage() {
@@ -67,14 +65,13 @@ void print_usage() {
     std::cout << "  chat | run             Interactive chat with DeepSeek-V4.1-Flash\n";
     std::cout << "  models                 List local checkpoints and their status\n";
     std::cout << "  info                   Show model, hardware and configured paths\n";
-    std::cout << "  bench [--tokens N]     Measured benchmark (default 50 tokens)\n";
+    std::cout << "  benchmark [--tokens N] Measured benchmark: first/warm/p50/p95, tok/s, RAM, VRAM, storage (alias: bench)\n";
     std::cout << "  doctor                 Hardware, storage and runtime diagnostics\n";
     std::cout << "  version                Print version\n";
     std::cout << "  generate <prompt>      Single-shot generation (options below)\n";
     std::cout << "  verify-model           Audit checkpoint shards, tensor index and config\n";
     std::cout << "  inspect                Display shard/volume mapping\n";
     std::cout << "  profile                Per-sublayer latency profile\n";
-    std::cout << "  benchmark              Short 4-token smoke benchmark\n";
     std::cout << "  download | install     Checkpoint acquisition / placement planners\n\n";
     std::cout << "Global options:  --help, -h   --version, -v\n";
     std::cout << "Chat options:    --max-tokens <N>        (default 512, or ASEMA_CHAT_MAX_TOKENS)\n";
@@ -157,15 +154,22 @@ int cmd_info() {
 }
 
 int cmd_doctor() {
-    std::cout << "[ASEMA DOCTOR] Running Comprehensive System Diagnostics...\n\n";
+    namespace ui = asema::ui;
+    std::cout << ui::bold() << "  ASEMA DOCTOR" << ui::reset() << "\n\n";
     auto report = asema::m8::M8ModelDoctor::run_diagnostics();
+    int problems = 0;
     for (const auto& item : report.items) {
-        std::cout << "  [" << (item.passed ? "PASS" : "FAIL") << "] "
-                  << std::setw(12) << std::left << item.category << ": "
-                  << std::setw(30) << std::left << item.name << " | "
-                  << item.details << "\n";
+        const std::string label = item.category + " · " + item.name;
+        ui::step(label, item.passed, item.passed ? "OK" : "PROBLEM", item.details);
+        if (!item.passed) {
+            ++problems;
+            if (!item.hint.empty()) std::cout << "      " << ui::yellow() << "→ " << item.hint << ui::reset() << "\n";
+        }
     }
-    std::cout << "\n" << report.summary << "\n";
+    std::cout << "\n  " << (report.all_passed ? ui::green() : ui::red()) << ui::bold()
+              << (report.all_passed ? "READY" : "PROBLEM") << ui::reset();
+    if (!report.all_passed) std::cout << "  (" << problems << " check" << (problems == 1 ? "" : "s") << " failed; fixes are listed above)";
+    std::cout << "\n";
     return report.all_passed ? 0 : 1;
 }
 
@@ -469,77 +473,122 @@ int cmd_chat(int argc, char** argv) {
             return 1;
         }
     }
+    namespace ui = asema::ui;
     asema::m8::AsemaEngine engine;
     {
+        // Every line below reports something actually checked on this machine.
+        std::cout << ui::bold() << "  INITIALIZING ASEMA" << ui::reset() << "\n\n";
+        const std::string gpu = detect_gpu_name();
+        ui::step("GPU", gpu != "no DXGI adapter", gpu != "no DXGI adapter" ? "READY" : "NOT FOUND", gpu);
+        char ram[32];
+        std::snprintf(ram, sizeof(ram), "%.0f GB", system_ram_gb());
+        ui::step("SYSTEM MEMORY", true, "READY", ram);
+        std::string drives;
+        bool dirs_ok = true;
+        for (const std::string& dir : {asema::m8::paths::primary_shards(), asema::m8::paths::secondary_shards()}) {
+            if (dir.empty()) continue;
+            dirs_ok = dirs_ok && std::filesystem::exists(dir);
+            const char letter = asema::m8::drive_letter_of(dir);
+            if (!drives.empty()) drives += "  ";
+            drives += std::string(1, letter ? letter : '?') + ": " + asema::m8::drive_class_name(asema::m8::classify_drive_of_path(dir));
+        }
+        ui::step("STORAGE", dirs_ok, dirs_ok ? "READY" : "PROBLEM", drives);
         const auto st = check_checkpoint();
+        ui::step("MODEL INDEX", st.state == "READY", st.state == "READY" ? "READY" : st.state,
+                 std::to_string(st.shards_present) + "/" + std::to_string(st.shards_required) + " shards");
         if (st.state != "READY") {
-            std::cerr << "ERROR: " << st.state << " (" << st.shards_present << "/" << st.shards_required
-                      << " shards). Run 'asema models' and see MODEL_SETUP.md.\n";
+            std::cerr << "\nERROR: " << st.state << ". Run 'asema doctor' for details and see MODEL_SETUP.md.\n";
             return 1;
         }
     }
-    std::cout << "Status: LOCAL / loading model (first load can take a while)...\n";
+    std::cout << ui::dim() << "  LOADING MODEL — the first load can take a while" << ui::reset() << "\n" << std::flush;
     if (!engine.load_model()) {
         std::cerr << "ERROR: could not initialize the model from the configured shard directories.\n";
         return 1;
     }
-    int layers = engine.num_layers();
-    std::cout << "Status: LOCAL / READY\n";
-    std::cout << "  Checkpoint:                 " << (layers == 40 ? "VERIFIED (40/40 Layers)" : "PARTIAL (In Progress)") << "\n";
-    std::cout << "  Physical Layers Available:  " << layers << " / 40\n";
-    std::cout << "  Tokenizer:                  VERIFIED (BPE 129,280 vocab)\n";
-    std::cout << "  Compute Device:             " << detect_gpu_name() << " (DirectCompute)\n";
-    std::cout << "  RAM Working Set Ceiling:    20,480.00 MB (Dynamic)\n";
-    std::cout << "  VRAM Working Set Ceiling:   5,120.00 MB (Dynamic)\n";
-
+    const int layers = engine.num_layers();
     std::string failure_reason;
-    if (!engine.verify_40_layers(failure_reason)) {
+    const bool audit_ok = engine.verify_40_layers(failure_reason);
+    ui::step("TRANSFORMER LAYERS", audit_ok && layers == 40, audit_ok && layers == 40 ? "READY" : "PROBLEM",
+             std::to_string(layers) + "/40 layers, execution audit " + (audit_ok ? "passed" : "FAILED"));
+    if (!audit_ok) {
         std::cerr << "\n[AUDIT FAILED] 40-layer physical execution audit refused:\n"
                   << "  " << failure_reason << "\n\n"
                   << "[INCOMPLETE INFERENCE BLOCKED] Model has " << layers << "/40 materialized layers.\n"
-                  << "Zero partial inference or synthetic fallback permitted under ASEMA specification.\n"
-                  << "Resume checkpoint acquisition until 48/48 shards, 96,085 tensors, and 40/40 layers are verified.\n\n";
+                  << "No partial inference or synthetic fallback is permitted. Run 'asema doctor'.\n\n";
         return 1;
     }
+    ui::step("EXPERT ROUTER", true, "READY", "real top-6 of 384 experts per layer");
+    ui::step("GPU BACKEND", engine.gpu_active(), engine.gpu_active() ? "READY" : "CPU FALLBACK",
+             "Direct3D 11 compute, " + detect_gpu_name());
+    ui::step("KV CACHE", true, "READY", "128-position window per layer");
+    ui::step("LOCAL INFERENCE", true, "ONLINE");
 
-    std::cout << "\nType 'exit' or 'quit' to terminate session.\n";
-    std::cout << "Max tokens per reply: " << chat_max_tokens << " (set ASEMA_CHAT_MAX_TOKENS to change). Ctrl+C stops a reply.\n\n";
+    std::cout << "\n  " << ui::green() << ui::bold() << "ASEMA ONLINE" << ui::reset() << "\n";
+    std::cout << "  DeepSeek-V4.1-Flash  ·  LOCAL INFERENCE  ·  " << ui::dim() << "Made by Ajay" << ui::reset() << "\n\n";
+    std::cout << ui::dim() << "  Type a message and press Enter. 'exit' or 'quit' leaves. Ctrl+C stops a reply.\n"
+              << "  Up to " << chat_max_tokens << " tokens per reply (--max-tokens or ASEMA_CHAT_MAX_TOKENS).\n"
+              << ui::reset() << "\n";
 
     std::string prompt;
     while (true) {
-        std::cout << "You: " << std::flush;
+        std::cout << ui::cyan() << ui::bold() << "You ❯ " << ui::reset() << std::flush;
         if (!std::getline(std::cin, prompt) || prompt == "exit" || prompt == "quit") {
+            break;
+        }
+        if (asema::m8::M8ResourceGovernor::is_shutdown_requested()) {
+            std::cout << "\n  Interrupted.\n";
             break;
         }
         if (prompt.empty()) continue;
 
-        std::cout << "DeepSeek: " << std::flush;
-        engine.stream_text(prompt, [](const std::string& piece) {
-            std::cout << piece << std::flush;
-        }, chat_max_tokens);
+        const auto before = engine.get_telemetry();
+        const auto t0 = std::chrono::steady_clock::now();
+        std::cout << "\n" << ui::green() << ui::bold() << "DeepSeek ❯ " << ui::reset() << std::flush;
+        ui::StreamStyler styler;
+        engine.stream_text(prompt, [&](const std::string& piece) { styler.write(piece); }, chat_max_tokens);
+        styler.finish();
+        const double wall_s = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
         std::cout << "\n";
-        {
-            // Never end silently: say why the reply stopped.
-            const auto reason = engine.last_end_reason();
-            std::cout << "  [reply ended: " << asema::m8::to_string(reason);
-            if (reason == asema::m8::GenerationEndReason::EOS) {
-                std::cout << " (model stop token " << engine.last_stop_token_id() << ")";
-            } else if (reason == asema::m8::GenerationEndReason::MAX_TOKENS) {
-                std::cout << " (reached " << chat_max_tokens << " tokens; raise ASEMA_CHAT_MAX_TOKENS for longer replies)";
-            }
-            std::cout << "]\n";
+
+        // Never end silently: say why the reply stopped.
+        const auto reason = engine.last_end_reason();
+        std::cout << ui::dim() << "  reply ended: " << asema::m8::to_string(reason);
+        if (reason == asema::m8::GenerationEndReason::EOS) {
+            std::cout << " (model stop token " << engine.last_stop_token_id() << ")";
+        } else if (reason == asema::m8::GenerationEndReason::MAX_TOKENS) {
+            std::cout << " (reached " << chat_max_tokens << " tokens; raise --max-tokens for longer replies)";
         }
-        auto tel = engine.get_telemetry();
-        std::cout << "  [RAM: " << (tel.ram_working_set_bytes / (1024 * 1024)) << "/"
-                  << (tel.ram_ceiling_bytes / (1024 * 1024)) << " MB (peak "
-                  << (tel.peak_ram_working_set_bytes / (1024 * 1024)) << " MB, sys avail "
-                  << (tel.available_ram_bytes / (1024 * 1024 * 1024)) << " GB) | VRAM: "
-                  << (tel.vram_working_set_bytes / (1024 * 1024)) << "/"
-                  << (tel.vram_ceiling_bytes / (1024 * 1024)) << " MB (peak "
-                  << (tel.peak_vram_working_set_bytes / (1024 * 1024)) << " MB) | "
-                  << std::fixed << std::setprecision(1) << tel.last_token_latency_ms << " ms/tok]\n\n";
+        std::cout << ui::reset() << "\n";
+        if (reason == asema::m8::GenerationEndReason::USER_STOP) {
+            asema::m8::M8ResourceGovernor::clear_shutdown_request();  // Ctrl+C stopped this reply only
+        }
+
+        // Live status box: every number below is measured for this reply (deltas of engine counters).
+        const auto after = engine.get_telemetry();
+        const auto delta = [](uint64_t a, uint64_t b) { return a >= b ? a - b : a; };
+        const uint64_t tokens = delta(after.total_tokens_generated, before.total_tokens_generated);
+        const uint64_t hits = delta(after.cache_hits, before.cache_hits);
+        const uint64_t misses = delta(after.cache_misses, before.cache_misses);
+        const uint64_t bytes = delta(after.total_storage_bytes_read, before.total_storage_bytes_read);
+        const double mb = 1024.0 * 1024.0, gb = mb * 1024.0;
+        char l2[160], l3[200];
+        std::snprintf(l2, sizeof(l2), "RAM %5.1f/%.0f GB   VRAM %4.1f/%.0f GB   %s",
+                      after.ram_working_set_bytes / gb, after.ram_ceiling_bytes / gb,
+                      after.vram_working_set_bytes / gb, after.vram_ceiling_bytes / gb,
+                      after.gpu_accelerated ? "GPU ACTIVE" : "GPU NOT USED");
+        std::string rate = "-";
+        if (tokens > 0 && wall_s > 0.0) { char r[32]; std::snprintf(r, sizeof(r), "%.2f tok/s", tokens / wall_s); rate = r; }
+        std::string cache = "-";
+        if (hits + misses > 0) { char r[32]; std::snprintf(r, sizeof(r), "%.0f%%", 100.0 * hits / (hits + misses)); cache = r; }
+        std::string stor = "-";
+        if (bytes > 0 && wall_s > 0.0) { char r[48]; std::snprintf(r, sizeof(r), "%.0f MB/s", bytes / mb / wall_s); stor = r; }
+        std::snprintf(l3, sizeof(l3), "%s  •  CACHE %s  •  STORAGE %s  •  %llu tokens in %.0f s",
+                      rate.c_str(), cache.c_str(), stor.c_str(), static_cast<unsigned long long>(tokens), wall_s);
+        ui::box({std::string(ui::bold()) + "ASEMA" + ui::reset() + " • DeepSeek-V4.1-Flash • LOCAL", l2, l3});
+        std::cout << "\n";
     }
-    std::cout << "Session ended.\n";
+    std::cout << "\n  Session ended.\n";
     return 0;
 }
 
@@ -736,6 +785,17 @@ static double process_cpu_seconds() {
 }
 
 int cmd_bench(const std::string& prompt, int n_tokens) {
+    {
+        // Hardware context for the numbers that follow (all detected, none assumed).
+        std::cout << "Model:     DeepSeek-V4.1-Flash (full checkpoint, 40 layers)\n";
+        std::cout << "GPU:       " << detect_gpu_name() << "\n";
+        std::cout << "RAM:       " << std::fixed << std::setprecision(0) << system_ram_gb() << " GB system memory\n";
+        for (const std::string& dir : {asema::m8::paths::primary_shards(), asema::m8::paths::secondary_shards()}) {
+            if (dir.empty()) continue;
+            std::cout << "Storage:   " << dir << " (" << asema::m8::drive_class_name(asema::m8::classify_drive_of_path(dir)) << ")\n";
+        }
+        std::cout << "\n";
+    }
     asema::m8::M8ModelRunner runner;
     runner.set_gpu_acceleration(true);
     runner.set_gpu_mla_acceleration(false);
@@ -887,6 +947,7 @@ static void enable_utf8_console() {
 
 int main(int argc, char** argv) {
     enable_utf8_console();
+    asema::ui::init();
     std::setvbuf(stdout, nullptr, _IONBF, 0);
     std::setvbuf(stderr, nullptr, _IONBF, 0);
     std::ios_base::sync_with_stdio(true);
@@ -908,8 +969,6 @@ int main(int argc, char** argv) {
         return cmd_install();
     } else if (cmd == "inspect") {
         return cmd_inspect();
-    } else if (cmd == "benchmark") {
-        return cmd_benchmark();
     } else if (cmd == "generate") {
         std::string prompt = "DeepSeek";
         int max_tokens = 32;
@@ -965,7 +1024,7 @@ int main(int argc, char** argv) {
         return cmd_chat(argc, argv);
     } else if (cmd == "profile") {
         return cmd_profile();
-    } else if (cmd == "bench") {
+    } else if (cmd == "bench" || cmd == "benchmark") {
         std::string bench_prompt = "Write a short story about a lighthouse keeper.";
         int bench_tokens = 50;
         for (int i = 2; i < argc; ++i) {

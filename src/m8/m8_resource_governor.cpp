@@ -35,6 +35,10 @@ void M8ResourceGovernor::request_shutdown() {
     shutdown_requested_.store(true, std::memory_order_relaxed);
 }
 
+void M8ResourceGovernor::clear_shutdown_request() {
+    shutdown_requested_.store(false, std::memory_order_relaxed);
+}
+
 M8ResourceGovernor& M8ResourceGovernor::instance() {
     static M8ResourceGovernor inst;
     return inst;

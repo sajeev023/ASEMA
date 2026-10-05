@@ -51,6 +51,8 @@ public:
     static void install_signal_handlers();
     static bool is_shutdown_requested();
     static void request_shutdown();
+    // Forget a Ctrl+C that has already been handled (e.g. it stopped one chat reply; the session goes on).
+    static void clear_shutdown_request();
 
 private:
     M8ResourceGovernor() = default;

@@ -319,6 +319,8 @@ add_test(NAME cli_chat_rejects_bad_option COMMAND asema chat --no-such-option)
 set_tests_properties(cli_chat_rejects_bad_option PROPERTIES WILL_FAIL TRUE)
 add_test(NAME cli_models_missing_checkpoint COMMAND ${CMAKE_COMMAND} -E env ASEMA_SHARDS_PRIMARY=nonexistent_dir ASEMA_SHARDS_SECONDARY= ASEMA_HF_DIR=nonexistent_dir ASEMA_MODEL_ROOT=nonexistent_dir $<TARGET_FILE:asema> models)
 set_tests_properties(cli_models_missing_checkpoint PROPERTIES PASS_REGULAR_EXPRESSION "MODEL NOT FOUND")
+add_test(NAME cli_doctor_reports_problem COMMAND ${CMAKE_COMMAND} -E env ASEMA_SHARDS_PRIMARY=nonexistent_dir ASEMA_SHARDS_SECONDARY= ASEMA_HF_DIR=nonexistent_dir ASEMA_MODEL_ROOT=nonexistent_dir $<TARGET_FILE:asema> doctor)
+set_tests_properties(cli_doctor_reports_problem PROPERTIES PASS_REGULAR_EXPRESSION "PROBLEM.*failed; fixes are listed above" WILL_FAIL FALSE)
 # With the real checkpoint configured this must report READY (needs the model, so it is labelled).
 add_test(NAME cli_models_ready COMMAND asema models)
 set_tests_properties(cli_models_ready PROPERTIES PASS_REGULAR_EXPRESSION "READY +48/48")

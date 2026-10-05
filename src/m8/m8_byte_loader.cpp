@@ -7,8 +7,8 @@
 #include <filesystem>
 #include <fstream>
 #include <windows.h>
-#include <winioctl.h>
 #include <cctype>
+#include "asema/m8/m8_drive_info.hpp"
 
 namespace fs = std::filesystem;
 
@@ -278,23 +278,7 @@ double M8ByteRangeLoader::expert_read_cost(int layer_id, int expert_id) const {
         auto it = drive_cost_.find(letter);
         if (it != drive_cost_.end()) return it->second;
     }
-    double cost = 6.0;  // unknown or SATA-class
-    const std::string dev = std::string("\\\\.\\") + static_cast<char>(letter) + ":";
-    HANDLE h = CreateFileA(dev.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
-    if (h != INVALID_HANDLE_VALUE) {
-        STORAGE_PROPERTY_QUERY q{};
-        q.PropertyId = StorageDeviceProperty;
-        q.QueryType = PropertyStandardQuery;
-        alignas(8) char buf[1024] = {};
-        DWORD got = 0;
-        if (DeviceIoControl(h, IOCTL_STORAGE_QUERY_PROPERTY, &q, sizeof(q), buf, sizeof(buf), &got, nullptr) &&
-            got >= sizeof(STORAGE_DEVICE_DESCRIPTOR)) {
-            const auto* d = reinterpret_cast<const STORAGE_DEVICE_DESCRIPTOR*>(buf);
-            if (d->BusType == BusTypeNvme) cost = 1.0;
-            else if (d->BusType == BusTypeUsb) cost = 12.0;
-        }
-        CloseHandle(h);
-    }
+    const double cost = drive_class_read_cost(classify_drive_letter(static_cast<char>(letter)));
     std::lock_guard<std::mutex> lock(loc_mutex_);
     drive_cost_[letter] = cost;
     return cost;
