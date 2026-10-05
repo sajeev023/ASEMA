@@ -146,4 +146,5 @@ reachable on this storage layout.
 ## License
 
 MIT, copyright 2026 Ajay. See [LICENSE](LICENSE). The DeepSeek-V4.1-Flash model weights are governed
-by their own license and are not included in or licensed by this repository.
+by their own license and are not included in or licensed by this repository. The vendored
+`include/nlohmann/json.hpp` is nlohmann/json (MIT) and keeps its own license header.
