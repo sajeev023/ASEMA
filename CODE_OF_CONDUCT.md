@@ -23,8 +23,9 @@ Maintainers are responsible for clarifying these standards and may remove, edit,
 contributions, comments, and issues that do not follow them, and may temporarily or permanently
 ban contributors for behaviour they consider inappropriate or harmful.
 
-Report concerns to the maintainers through the contact listed in [SECURITY.md](SECURITY.md)
-(the maintainer must fill that contact in before the repository is made public).
+Report concerns privately to the maintainer through GitHub's private reporting channel described in
+[SECURITY.md](SECURITY.md) (Security tab → "Report a vulnerability"), or by contacting
+[@sajeev023](https://github.com/sajeev023) on GitHub.
 
 This Code of Conduct is adapted from the Contributor Covenant, version 2.1
 (https://www.contributor-covenant.org/version/2/1/code_of_conduct/).

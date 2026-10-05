@@ -1,18 +1,25 @@
-LICENSE PLACEHOLDER - NO LICENSE HAS BEEN CHOSEN YET
+MIT License
 
-This repository is being prepared for possible open-sourcing. The project owner has not yet
-selected a license, so until this file is replaced the code is "all rights reserved" and may
-not be used, copied, modified, or redistributed.
+Copyright (c) 2026 Ajay
 
-Before any publication the owner must:
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-  1. Decide on the license for the ASEMA source code (for example MIT or Apache-2.0).
-     A draft MIT text from an earlier session is kept for convenience in
-     docs/LICENSE_CANDIDATE_MIT.txt. It is a candidate only and has NOT been adopted.
-  2. Replace this file with the chosen license text and set the correct copyright holder.
-  3. Confirm that every redistributed third-party component allows redistribution
-     (see THIRD_PARTY in docs/OPEN_SOURCE_READINESS.md).
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Model weights are NOT part of this project and are NOT covered by any license granted here.
-The DeepSeek-V4.1-Flash checkpoint, tokenizer and related files are governed by their own
-license from their authors; obtain them from the official source.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Third-party code: include/nlohmann/json.hpp is nlohmann/json (MIT), with its own license header.
+The DeepSeek-V4.1-Flash model weights are NOT part of this repository and are governed by their
+own license from their publisher.

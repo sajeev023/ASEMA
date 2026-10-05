@@ -19,9 +19,11 @@ command-line tool, not a network service; it opens no listening sockets.
 
 ## Reporting a vulnerability
 
-Please do not open a public issue for a suspected vulnerability. Contact the maintainers privately
-at the address the project owner publishes (**placeholder: to be set before any release**).
-Include the affected version, a description, and reproduction steps.
+Please do not open a public issue for a suspected vulnerability. Report it privately through
+GitHub: **Security tab → "Report a vulnerability"** on https://github.com/sajeev023/ASEMA
+(<https://github.com/sajeev023/ASEMA/security/advisories/new>). Include the affected version, a
+description, and reproduction steps. This is a one-person research project, so there is no
+guaranteed response time.
 
 ## Hygiene for contributors
 

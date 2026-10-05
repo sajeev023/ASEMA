@@ -48,4 +48,4 @@ All notable changes are listed here. The project is pre-release; versions follow
 - Greedy decoding only; temperature / top-k sampling is not implemented.
 - Windows + Direct3D 11 only. Decode speed is storage-bound; see docs/PERFORMANCE.md for
   measured numbers.
-- The license file is a placeholder until the maintainer chooses a license.
+- Licensed under MIT (see LICENSE). Model weights are not covered by it.

@@ -145,5 +145,5 @@ reachable on this storage layout.
 
 ## License
 
-**No license has been chosen yet.** See [LICENSE](LICENSE). Model weights are governed by their own
-license and are not included.
+MIT, copyright 2026 Ajay. See [LICENSE](LICENSE). The DeepSeek-V4.1-Flash model weights are governed
+by their own license and are not included in or licensed by this repository.

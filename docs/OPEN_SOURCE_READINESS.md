@@ -1,19 +1,17 @@
 # Open-source readiness
 
-**Nothing has been published.** No repository was created, nothing was pushed, and no model files
-were uploaded. This document records what was checked and changed so the tree *could* be
-open-sourced, and what the owner still has to decide.
+**Published** at https://github.com/sajeev023/ASEMA from a fresh single-commit history. No model
+files were uploaded. This document records what was checked and changed before publication, and the
+decisions that were made.
 
-## Open decisions (owner action required)
+## Decisions
 
-1. **License.** `LICENSE` is a placeholder. A draft MIT text is kept in
-   `docs/LICENSE_CANDIDATE_MIT.txt`; it was written by an earlier session and has not been adopted.
-   Choose the license and copyright holder.
-2. **Git history.** The two existing commits contain build output, model-weight slices, a tokenizer,
-   reports with local paths, and large synthetic files. The working-tree cleanup below does not
-   rewrite history. Before publishing, publish from a **fresh repository** (recommended: copy the
-   cleaned tree into a new `git init`) or rewrite history deliberately.
-3. **Security contact** in `SECURITY.md` is a placeholder.
+1. **License: MIT**, copyright 2026 Ajay (chosen for simplicity and wide reuse; Apache-2.0 would
+   add a patent grant). Model weights are not covered; they keep their publisher's license.
+2. **Git history.** The original local repository (two commits) contained build output,
+   model-weight slices, a tokenizer, reports with local paths and large synthetic files. It was not
+   published; the public repository started from a clean tree in a new `git init`.
+3. **Security contact:** GitHub private vulnerability reporting (no e-mail address is published).
 4. **Model files.** `tokenizer.json`, `model.safetensors.index.json` and the other files under
    `examples/real_model/` come from the model publisher. They are now git-ignored and must not be
    redistributed unless that publisher's license allows it. Users obtain them themselves.
