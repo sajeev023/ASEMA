@@ -2,16 +2,37 @@
 
 **Run massive Mixture-of-Experts models locally using storage-aware sparse expert execution.**
 
-Current support: **DeepSeek-V4.1-Flash** (763B-parameter MoE, full checkpoint, no extra
-quantization, pruning or layer reduction), on Windows with a Direct3D 11 GPU. The model stays on
-disk; only the working set is held in RAM and VRAM. Other models are not supported.
+Current support: **DeepSeek-V4.1-Flash** (763B-parameter MoE; all 48 shards and all 40 layers are
+read from the real checkpoint, with no extra quantization, pruning or layer reduction), on Windows
+with a Direct3D 11 GPU. The model stays on disk; only the working set is held in RAM and VRAM.
+Other models are not supported.
 
 *Made by Ajay.*
 
-> **Status: research code.** Output correctness has been verified on sample prompts (see
-> [docs/VERIFICATION.md](docs/VERIFICATION.md)). Speed is **limited by storage bandwidth** and is
-> far from interactive on the reference machine (see [Measured performance](#measured-performance)).
-> Nothing here is a production service.
+> **Status: research code, with known correctness gaps (see below).** Short prompts give coherent
+> output, but fidelity to the official model has **not** been verified, and long generations
+> degrade. Speed is **limited by storage bandwidth** and is far from interactive on the reference
+> machine (see [Measured performance](#measured-performance)). Nothing here is a production service.
+
+### Known correctness gaps
+
+The engine executes the real router, the real experts, the shared expert, hyper-connections, the
+final norm and the LM head, and it runs all 40 layers. It does **not** yet execute these parts of
+the DeepSeek-V4.1 architecture, although their weights exist in the checkpoint and the config
+declares them:
+
+- the **compressed-KV attention** path (`compress_ratios`) and the **indexer** (`index_topk`),
+  so attention only sees a **128-token sliding window** (`sliding_window`);
+- the **engram** (n-gram memory) modules at layers 1 and 14;
+- the multi-token-prediction / dspark heads (not needed for plain decoding).
+
+Observed consequence: in 160-token test replies, text stayed coherent for the first roughly 60-100
+tokens and then degenerated (garbled words in one reply, a repeating `<!DOCTYPE html>` in another).
+The cause is **not established**: the missing attention/engram paths are the leading suspects, but
+the degeneration began before 128 positions in one case, so a bug elsewhere has not been ruled out.
+Replies under about 50 tokens looked coherent, but the official reference code is not part of this
+repository, so they were never compared numerically with it. Treat output beyond a short exchange
+as unreliable until the cause is found and verified.
 
 The model weights are **not** part of this repository and are **not** redistributed. You must
 obtain the DeepSeek-V4.1-Flash checkpoint from its official source under its own license.
@@ -120,7 +141,7 @@ greedy decoding:
 | Metric | Result |
 |---|---|
 | Cold first token (includes prompt prefill) | ~180 s |
-| Warm decode, mean | **5.8 s/token (0.17 tokens/s)**, 50-token run; 7.4 s before the VRAM-tier cache, ~9.3 s before any tuning |
+| Warm decode, mean | **about 6.2 s/token (0.16 tokens/s)**; 3 runs of the current build: 6.6 / 5.8 / 6.1 s. Identical runs vary by about +/-10%. ~9.3 s before the earlier tuning |
 | Warm decode, p50 / p95 | 5.7 s / 7.3 s |
 | Data read from storage | ~3.5 GB per token (~4.0 s of each token is spent waiting on it) |
 | Expert cache hit rate | 22% (192 VRAM slots; slow-drive experts are kept longer) |
@@ -139,7 +160,7 @@ reachable on this storage layout.
 ## Documentation
 
 [ARCHITECTURE](docs/ARCHITECTURE.md) · [BUILD](BUILD.md) · [MODEL_SETUP](docs/MODEL_SETUP.md) ·
-[HARDWARE](HARDWARE.md) · [PERFORMANCE](docs/PERFORMANCE.md) · [VERIFICATION](docs/VERIFICATION.md) ·
+[HARDWARE](HARDWARE.md) · [PERFORMANCE](docs/PERFORMANCE.md) · [OPTIMIZATION LEDGER](docs/OPTIMIZATION_LEDGER.md) · [VERIFICATION](docs/VERIFICATION.md) ·
 [DEBUGGING](DEBUGGING.md) · [CONTRIBUTING](CONTRIBUTING.md) · [SECURITY](SECURITY.md) ·
 [OPEN_SOURCE_READINESS](docs/OPEN_SOURCE_READINESS.md)
 

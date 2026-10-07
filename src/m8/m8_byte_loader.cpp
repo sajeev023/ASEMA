@@ -38,6 +38,7 @@ M8ByteRangeLoader::M8ByteRangeLoader(std::shared_ptr<M8MultiVolumeManager> vol_m
         const double v = std::atof(a);
         if (v > 0.0) blend_alpha_ = v;
     }
+    if (const char* k = std::getenv("ASEMA_PREFETCH_K")) set_prefetch_k(std::atoi(k));
     ensure_default_expert();
 }
 
@@ -362,6 +363,79 @@ void M8ByteRangeLoader::prefetch_expert(int layer_id, int expert_id) {
     active_prefetches_.push_back(std::move(fut));
 }
 
+// Learns which experts of `layer` follow which experts of layer-1 (same token), from real selections only.
+void M8ByteRangeLoader::observe_selection_locked(int layer, const std::vector<int>& expert_ids) {
+    if (layer < 0 || layer >= kPredLayers) return;
+    if (cooc_.empty()) {
+        cooc_.assign(static_cast<size_t>(kPredLayers) * kPredExperts * kPredExperts, 0);
+        last_selection_.assign(kPredLayers, {});
+    }
+    if (layer > 0) {
+        for (int f : last_selection_[layer - 1]) {
+            if (f < 0 || f >= kPredExperts) continue;
+            const size_t base = (static_cast<size_t>(layer) * kPredExperts + f) * kPredExperts;
+            for (int e : expert_ids) {
+                if (e < 0 || e >= kPredExperts) continue;
+                if (cooc_[base + e] < 65535) ++cooc_[base + e];
+            }
+        }
+    }
+    last_selection_[layer] = expert_ids;
+}
+
+void M8ByteRangeLoader::prefetch_predicted(int target_layer, const std::vector<int>& current_selection, int k,
+                                           const std::function<bool(int)>& is_resident) {
+    if (k <= 0 || target_layer < 1 || target_layer >= kPredLayers) return;
+    std::vector<int> chosen;
+    {
+        std::lock_guard<std::mutex> lock(cache_mutex_);
+        // Whatever the previous prefetch left unconsumed was a wrong guess: account for it, and park the
+        // (possibly still running) read so nobody blocks on it.
+        for (auto& kv : inflight_) {
+            telemetry_.wasted_prefetches++;
+            graveyard_.push_back(std::move(kv.second));
+        }
+        inflight_.clear();
+        graveyard_.erase(std::remove_if(graveyard_.begin(), graveyard_.end(), [](const auto& f) {
+            return f.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+        }), graveyard_.end());
+        if (cooc_.empty()) return;
+
+        std::vector<uint32_t> score(kPredExperts, 0);
+        for (int f : current_selection) {
+            if (f < 0 || f >= kPredExperts) continue;
+            const size_t base = (static_cast<size_t>(target_layer) * kPredExperts + f) * kPredExperts;
+            for (int e = 0; e < kPredExperts; ++e) score[e] += cooc_[base + e];
+        }
+        std::vector<std::pair<uint32_t, int>> cand;
+        for (int e = 0; e < kPredExperts; ++e) {
+            if (score[e] == 0) continue;
+            if (cache_.find(CacheKey{target_layer, e}) != cache_.end()) continue;
+            cand.emplace_back(score[e], e);
+        }
+        std::sort(cand.begin(), cand.end(), [](const auto& a, const auto& b) { return a.first > b.first; });
+        // Take the best `k` that are not already resident in a faster tier; those are the ones worth reading.
+        for (const auto& c : cand) {
+            if (static_cast<int>(chosen.size()) >= k) break;
+            if (is_resident && is_resident(c.second)) continue;
+            chosen.push_back(c.second);
+        }
+        for (int e : chosen) {
+            telemetry_.prefetches_issued++;
+            telemetry_.total_bytes_read += ExpertDimensions::TOTAL_EXPERT_BYTES;
+            telemetry_.storage_read_ops += 2;
+            inflight_.emplace(CacheKey{target_layer, e},
+                std::async(std::launch::async, [this, target_layer, e]() -> std::shared_ptr<ExpertPayload> {
+                    acquire_io_slot();
+                    auto payload = std::make_shared<ExpertPayload>();
+                    const bool ok = internal_read_expert(target_layer, e, *payload);
+                    release_io_slot();
+                    return ok ? payload : nullptr;
+                }).share());
+        }
+    }
+}
+
 void M8ByteRangeLoader::prefetch_layer_experts(int layer_id, const std::vector<int>& expert_ids) {
     for (int id : expert_ids) {
         prefetch_expert(layer_id, id);
@@ -459,6 +533,7 @@ M8ByteRangeLoader::PendingExpertLoad M8ByteRangeLoader::begin_layer_experts(
             for (int id : expert_ids) *trace << layer_id << ' ' << id << '\n';
             trace->flush();
         }
+        observe_selection_locked(layer_id, expert_ids);
         for (size_t i = 0; i < expert_ids.size(); ++i) {
             CacheKey key{layer_id, expert_ids[i]};
             auto& slot = pending.slots_[i];
@@ -482,6 +557,14 @@ M8ByteRangeLoader::PendingExpertLoad M8ByteRangeLoader::begin_layer_experts(
             } else {
                 telemetry_.cache_misses++;
                 slot.is_miss = true;
+                // A read for this expert may already be running (started by prefetch_predicted): share it.
+                auto fit = inflight_.find(key);
+                if (fit != inflight_.end()) {
+                    slot.pending = std::move(fit->second);
+                    slot.from_prefetch = true;
+                    telemetry_.useful_prefetches++;
+                    inflight_.erase(fit);
+                }
             }
         }
     }
@@ -490,7 +573,7 @@ M8ByteRangeLoader::PendingExpertLoad M8ByteRangeLoader::begin_layer_experts(
     // (extra tasks wait in acquire_io_slot), and a layer has at most 6 experts, so the number of
     // helper threads is bounded.
     for (auto& slot : pending.slots_) {
-        if (!slot.is_miss) continue;
+        if (!slot.is_miss || slot.from_prefetch) continue;
         const int expert = slot.expert_id;
         slot.pending = std::async(std::launch::async, [this, layer_id, expert]() -> std::shared_ptr<ExpertPayload> {
             acquire_io_slot();
@@ -522,8 +605,10 @@ bool M8ByteRangeLoader::finish_layer_experts(PendingExpertLoad& pending, bool pu
     telemetry_.parallel_batches++;
     for (size_t i = 0; i < loaded.size(); ++i) {
         if (!loaded[i]) continue;
-        telemetry_.total_bytes_read += loaded[i]->total_bytes();
-        telemetry_.storage_read_ops += 2;
+        if (!pending.slots_[i].from_prefetch) {   // prefetched reads were counted when they were issued
+            telemetry_.total_bytes_read += loaded[i]->total_bytes();
+            telemetry_.storage_read_ops += 2;
+        }
         if (publish_to_cache) {
             insert_locked(CacheKey{pending.layer_id_, pending.slots_[i].expert_id}, loaded[i], /*prefetched=*/false);
         }

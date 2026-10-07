@@ -585,7 +585,7 @@ int cmd_chat(int argc, char** argv) {
         if (bytes > 0 && wall_s > 0.0) { char r[48]; std::snprintf(r, sizeof(r), "%.0f MB/s", bytes / mb / wall_s); stor = r; }
         std::snprintf(l3, sizeof(l3), "%s  •  CACHE %s  •  STORAGE %s  •  %llu tokens in %.0f s",
                       rate.c_str(), cache.c_str(), stor.c_str(), static_cast<unsigned long long>(tokens), wall_s);
-        ui::box({std::string(ui::bold()) + "ASEMA" + ui::reset() + " • DeepSeek-V4.1-Flash • LOCAL", l2, l3});
+        ui::box({std::string(ui::bold()) + "ASEMA" + ui::reset() + " • DeepSeek-V4.1-Flash • LOCAL", l2, l3}, 70);
         std::cout << "\n";
     }
     std::cout << "\n  Session ended.\n";

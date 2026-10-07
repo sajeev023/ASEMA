@@ -6,6 +6,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
+#include <functional>
 #include <future>
 #include <list>
 #include <memory>
@@ -72,6 +73,7 @@ public:
             std::shared_ptr<ExpertPayload> cached;                       // cache hit: already resident
             std::shared_future<std::shared_ptr<ExpertPayload>> pending;  // cache miss: being read
             bool is_miss{false};
+            bool from_prefetch{false};   // shares a read started by prefetch_predicted (bytes already counted)
             int expert_id{-1};
         };
         int layer_id_{-1};
@@ -89,6 +91,18 @@ public:
     // cache. The GPU path passes false: VRAM is its cache, and a second host copy would only waste RAM.
     // False if a read failed.
     bool finish_layer_experts(PendingExpertLoad& pending, bool publish_to_cache = true);
+
+    // Predictive prefetch of the NEXT layer's experts. The loader learns, online and from the real
+    // router's choices only, which experts of layer L+1 tend to follow a given selection at layer L.
+    // Call this once layer L's own reads are done (storage is otherwise idle while it computes): it
+    // starts reads for the `k` most likely experts of `target_layer` that are not resident
+    // (`is_resident` says which are already in VRAM). begin_layer_experts() then reuses an in-flight
+    // read instead of starting a second one. Predictions never change what is computed, only when its
+    // bytes arrive; a wrong prediction costs storage bandwidth and is counted as a wasted prefetch.
+    void prefetch_predicted(int target_layer, const std::vector<int>& current_selection, int k,
+                            const std::function<bool(int)>& is_resident);
+    int prefetch_k() const { return prefetch_k_; }
+    void set_prefetch_k(int k) { prefetch_k_ = k < 0 ? 0 : (k > 8 ? 8 : k); }
 
     // Relative cost of re-reading this expert: 1.0 on an NVMe drive, about 6 on SATA, more on USB/other.
     // Derived from the Windows storage bus type of the drive holding the expert's shard (not benchmarked).
@@ -163,6 +177,16 @@ private:
     std::unordered_map<CacheKey, CacheEntry, CacheKeyHash> cache_;
     std::list<CacheKey> lru_;
     std::vector<std::future<void>> active_prefetches_;
+
+    // Predictive prefetch state (cache_mutex_ guards all of it).
+    static constexpr int kPredLayers = 64;
+    static constexpr int kPredExperts = 384;
+    int prefetch_k_{0};                                  // experts prefetched per layer (0 = off)
+    std::vector<uint16_t> cooc_;                         // [layer][expert at layer-1][expert at layer], saturating
+    std::vector<std::vector<int>> last_selection_;       // per layer, the selection of the token in progress
+    std::unordered_map<CacheKey, std::shared_future<std::shared_ptr<ExpertPayload>>, CacheKeyHash> inflight_;
+    std::vector<std::shared_future<std::shared_ptr<ExpertPayload>>> graveyard_;  // unconsumed reads still running
+    void observe_selection_locked(int layer, const std::vector<int>& expert_ids);
 
     // Resolved byte ranges of an expert in its shard (avoids 6 filesystem stats per lookup)
     struct ExpertFileLoc {

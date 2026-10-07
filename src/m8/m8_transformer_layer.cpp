@@ -598,13 +598,29 @@ void M8TransformerLayer::forward_hc(const float* in, float* out, const float* pr
     auto t_l0 = std::chrono::high_resolution_clock::now();
     // On the GPU path, VRAM is the expert cache: experts already resident there are not read at all.
     std::vector<char> in_vram(selection.expert_indices.size(), 0);
-    if (use_gpu) {
+    // ASEMA_LEGACY_RAM_CACHE=1 restores the previous data path (every expert is read through the host
+    // cache even when VRAM already holds it) so the two designs can be A/B-tested in one binary.
+    static const bool legacy_ram_cache = std::getenv("ASEMA_LEGACY_RAM_CACHE") != nullptr;
+    if (use_gpu && !legacy_ram_cache) {
         for (size_t k = 0; k < in_vram.size(); ++k) {
             in_vram[k] = gpu_kernel_->is_resident(layer_id_, selection.expert_indices[k]) ? 1 : 0;
         }
     }
     M8ByteRangeLoader::PendingExpertLoad pending = byte_loader_->begin_layer_experts(
         layer_id_, selection.expert_indices, use_gpu ? &in_vram : nullptr);
+
+    // Once this layer's own reads have arrived, storage is idle while the GPU finishes and the next
+    // layer's attention runs: use that time to start reading the experts the next layer will probably need.
+    int reads_outstanding = 0;
+    for (char r : in_vram) reads_outstanding += r ? 0 : 1;
+    const int next_layer = layer_id_ + 1;
+    auto start_prefetch = [&]() {
+        const int k = byte_loader_->prefetch_k();
+        if (!use_gpu || k <= 0 || next_layer >= 40) return;
+        byte_loader_->prefetch_predicted(next_layer, selection.expert_indices, k,
+                                         [&](int e) { return gpu_kernel_->is_resident(next_layer, e); });
+    };
+    if (use_gpu && reads_outstanding == 0) start_prefetch();
     double load_time_acc = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - t_l0).count();
 
     auto t_shared_0 = std::chrono::high_resolution_clock::now();
@@ -631,6 +647,7 @@ void M8TransformerLayer::forward_hc(const float* in, float* out, const float* pr
                 held[e] = pending.get(e);
                 wait_ms += std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - t_w0).count();
                 if (!held[e]) return false;
+                if (--reads_outstanding == 0) start_prefetch();
                 scales = held[e]->scales.data();
                 weights = held[e]->weights.data();
                 return true;
@@ -638,7 +655,7 @@ void M8TransformerLayer::forward_hc(const float* in, float* out, const float* pr
             selection.expert_weights, norm_ffn.data(), routed_out.data());
         auto t_c1 = std::chrono::high_resolution_clock::now();
         auto gpu_after = gpu_kernel_->telemetry();
-        const bool published = byte_loader_->finish_layer_experts(pending, /*publish_to_cache=*/false);
+        const bool published = byte_loader_->finish_layer_experts(pending, /*publish_to_cache=*/legacy_ram_cache);
         if (!gpu_ok || !published) {
             throw std::runtime_error("M8TransformerLayer: routed experts for layer " + std::to_string(layer_id_) +
                                      " could not be read from disk or executed on the GPU. Refusing synthetic execution.");

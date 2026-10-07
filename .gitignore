@@ -1,6 +1,7 @@
 # ASEMA .gitignore
 build/
 build_clean/
+build_*/
 build_asan/
 .cache/
 .ninja_*

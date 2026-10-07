@@ -59,6 +59,7 @@ int main() {
         auto vol_mgr = std::make_shared<asema::m8::M8MultiVolumeManager>();
         vol_mgr->register_volume(asema::m8::paths::primary_shards());
         vol_mgr->register_volume(asema::m8::paths::secondary_shards());
+        vol_mgr->load_index(asema::m8::paths::hf_dir() + "/model.safetensors.index.json");
 
         asema::m8::M8ByteRangeLoader loader(vol_mgr);
         asema::m8::ExpertPayload payload;
@@ -91,6 +92,9 @@ int main() {
     {
         auto vol_mgr = std::make_shared<asema::m8::M8MultiVolumeManager>();
         vol_mgr->register_volume(asema::m8::paths::primary_shards());
+        vol_mgr->register_volume(asema::m8::paths::secondary_shards());
+        // The engine refuses synthetic fallbacks, so experts can only be found through the real index.
+        vol_mgr->load_index(asema::m8::paths::hf_dir() + "/model.safetensors.index.json");
         auto loader = std::make_shared<asema::m8::M8ByteRangeLoader>(vol_mgr);
 
         asema::m8::M8TransformerLayer layer(0, loader);

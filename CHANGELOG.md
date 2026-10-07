@@ -26,7 +26,12 @@ All notable changes are listed here. The project is pre-release; versions follow
 
 - VRAM is now the primary expert cache (192 slots, frequency+recency eviction, weighted by the
   re-read cost of the drive each expert lives on). Experts already resident in VRAM are not read from
-  storage and no longer duplicated in RAM. Warm decode 7.4 -> 5.8 s/token, working set ~11.7 -> ~8 GB.
+  storage and no longer duplicated in RAM. RAM working set ~11.7 -> ~8 GB. Speed: a paired 3-vs-3
+  comparison gave 6.49 s -> 6.16 s/token warm (-5%), which is within run-to-run noise (about 10%),
+  so no speedup is claimed. (An earlier unpaired "7.4 -> 5.8 s" figure was withdrawn.)
+- Experimental predictive next-layer expert prefetch (`ASEMA_PREFETCH_K`, default 0 = off). Measured
+  to add 28-62% more storage reads with only 27-32% of them used and no demonstrated speedup on this
+  machine; kept disabled. See docs/OPTIMIZATION_LEDGER.md.
 
 - New terminal experience: logo, a short startup sequence in which every line reflects a real check
   (GPU, memory, storage bus type per shard drive, model index, layer audit, GPU backend), distinct

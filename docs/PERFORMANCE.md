@@ -172,3 +172,10 @@ GPU upload/compute. Software changes cannot beat the drive's bandwidth.
   2..N and nothing is smoothed. GPU utilization is not measured.
 - Available RAM varied with other applications; results will differ on other machines.
 - A 40-token run on one prompt is a small sample. Treat differences below about 10% as noise.
+- Later A/B work (VRAM-tier cache, predictive prefetch) is recorded in
+  [OPTIMIZATION_LEDGER.md](OPTIMIZATION_LEDGER.md), including a withdrawn speedup claim. Identical
+  configurations were observed to vary by 5.8-7.1 s/token on one day, so figures in this file from
+  single unpaired runs (including the 7,446 ms baseline above) carry that uncertainty.
+- All speed figures describe an engine that does not execute the model's global compressed
+  attention, indexer or Engram modules (see the README's "Known correctness gaps"); a faithful
+  implementation would be slower.

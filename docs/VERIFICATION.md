@@ -52,6 +52,14 @@ runs below cover them.
 | `Explain what an NVMe SSD does in one sentence.` | `An NVMe SSD is a high-speed storage drive that keeps data accessible even when your computer is powered off.` |
 | `What is 2 + 2?` | `2 + 2 = 4` |
 | `Write a short story about a lighthouse keeper.` | coherent English narrative (40 tokens) |
+| `Hello` | Chinese greeting with an emoji and a bulleted offer to help (valid, coherent) |
+| `Explain what an NVMe SSD does.` | **Poor:** "NVMe isn't a standard term - you likely mean NVMe as a typo..." (identical with 192 and with 8 VRAM slots, so not a cache bug) |
+| `Explain ASEMA.` | starts coherently (treats the unknown name as a possible typo of "ASME"), then **degenerates into garbled words** by about token 100 |
+| `Write a small HTML file.` | valid `<!DOCTYPE html>`, `<head>`, `<style>` start, then **repeats `<!DOCTYPE html>`** at roughly token 70-90 |
+
+The last two rows are failures. The cause is not established (see "Known correctness gaps" in the
+README: the compressed-attention, indexer and engram paths are not executed, but the HTML
+degeneration began inside the 128-token window).
 
 For `hi` and `2 + 2` the output was compared token-for-token with the older FP32-dequantize path
 (`ASEMA_DENSE_FP8_DIRECT=0`) and was identical. Other prompts were checked for plausibility only.
