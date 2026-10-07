@@ -86,9 +86,17 @@ The staged tree was exported to an empty directory (230 files, no `build/`, no `
 executables). Without any model files `ctest -LE requires-data` passes 26 of 26. The 17
 tests labelled `requires-data` need the checkpoint and fail, abort or time out without it. With the
 checkpoint configured, the lighter ones were run on the reference machine: 11 of 12 passed, and
-`test_m8_run` (real inference) exceeded the 150 s cap I gave it. The heaviest tests (full-model
-generation suites) were not re-run after the path/loader changes; the end-to-end `generate` runs
-above cover the same pipeline.
+`test_m8_run` (real inference) exceeded the 150 s cap I gave it.
+
+Later full run of all 18 `requires-data` tests on the current build (400 s cap per test): **16 passed**,
+including `test_m8_run` (160 s), `test_m8_generation_engine` (197 s), `test_m8_real_checkpoint_pipeline`
+(366 s), `test_m8_production_suite` (107 s) and `test_m8_full_execution` (all four stages, with the
+40-layer generation). **2 hit the cap without finishing**: `test_m8_benchmark` and
+`test_m8_mla_benchmark`, which are benchmark programs rather than pass/fail assertions; they were
+not run to completion. `test_m8_full_execution` initially crashed because its setup never loaded the
+tensor index (it depended on a synthetic fallback the engine no longer allows); the test was fixed,
+not the engine. Passing these tests shows the pipeline runs end to end; it does not show fidelity to
+the official model (see the README's "Known correctness gaps").
 
 ## Not verified
 
