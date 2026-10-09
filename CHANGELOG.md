@@ -5,6 +5,11 @@ All notable changes are listed here. The project is pre-release; versions follow
 ## [Unreleased] - 0.1.0
 
 ### Added
+- Optional storage manifest (`storage_manifest` / `ASEMA_STORAGE_MANIFEST`): an explicit JSON list of shard files
+  (`{"shards":[{"name","path","size"}]}`) that replaces directory scanning, so shards can live on any number of
+  drives. An invalid manifest is a hard error. Behaviour without it is unchanged.
+- `docs/research/nextgen/`: architecture validation report, measurements, simulators and the Phase 1 storage
+  rebalance report (measured +15 % tok/s on one machine; the full-size modeled gain was not reached).
 - `asema` with no arguments starts an interactive chat; new commands `chat`/`run`, `models`,
   `info`, `version`, `--help`, `--version`. `models` reports `READY`, `MODEL NOT FOUND` or
   `CHECKPOINT INCOMPLETE` and never falls back to another model.

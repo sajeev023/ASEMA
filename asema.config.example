@@ -18,3 +18,6 @@ hf_dir=models/DeepSeek-V4.1-Flash/hf
 
 # Synthetic MoE model used by the storage/runtime tests (generated locally).  ASEMA_SYNTHETIC_DIR
 synthetic_dir=examples/synthetic_moe/model_synthetic
+
+# Optional explicit shard placement (JSON), replaces directory scanning.  ASEMA_STORAGE_MANIFEST
+# storage_manifest=

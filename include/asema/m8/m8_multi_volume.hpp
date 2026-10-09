@@ -40,6 +40,12 @@ public:
     // Register a physical volume root path (e.g. the directories named by asema::m8::paths::primary_shards() / secondary_shards())
     void register_volume(const std::string& volume_root);
 
+    // Load an explicit storage manifest ({"shards":[{"name","path","size"}]}). While a manifest is active it is the
+    // single source of truth: only the listed files are indexed, volume directories are not scanned. Returns false
+    // (and leaves the manager untouched) if the file is unreadable or any listed shard is missing / the wrong size.
+    bool load_storage_manifest(const std::string& manifest_path);
+    bool manifest_active() const { return manifest_active_; }
+
     // Load official Hugging Face model.safetensors.index.json
     bool load_index(const std::string& index_json_path);
 
@@ -71,6 +77,8 @@ public:
 
 private:
     std::vector<std::string> volumes_;
+    bool manifest_active_{false};
+    std::unordered_map<std::string, std::string> manifest_;   // shard_name -> absolute path (storage manifest)
     // Map tensor_name -> shard_name (e.g. "layers.0.ffn.experts.0.w1.weight" -> "model-00003-of-00048.safetensors")
     std::unordered_map<std::string, std::string> tensor_to_shard_;
     // Cache of shard_name -> resolved physical path

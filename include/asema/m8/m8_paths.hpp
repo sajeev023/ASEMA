@@ -73,6 +73,11 @@ inline std::string secondary_shards() {
     return detail::resolve("ASEMA_SHARDS_SECONDARY", "shards_secondary", "");
 }
 
+// Optional explicit shard-placement manifest (JSON). Empty string means "scan the shard directories".
+inline std::string storage_manifest() {
+    return detail::resolve("ASEMA_STORAGE_MANIFEST", "storage_manifest", "");
+}
+
 inline std::string model_root() {
     return detail::resolve("ASEMA_MODEL_ROOT", "model_root", "models/DeepSeek-V4.1-Flash");
 }

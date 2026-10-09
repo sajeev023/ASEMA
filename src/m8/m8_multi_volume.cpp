@@ -2,6 +2,8 @@
 
 #include <filesystem>
 #include <fstream>
+#include <stdexcept>
+#include "asema/m8/m8_paths.hpp"
 #include <nlohmann/json.hpp>
 #include <sstream>
 
@@ -10,6 +12,31 @@ namespace fs = std::filesystem;
 namespace asema {
 namespace m8 {
 
+bool M8MultiVolumeManager::load_storage_manifest(const std::string& manifest_path) {
+    std::ifstream f(manifest_path);
+    if (!f.is_open()) return false;
+    std::unordered_map<std::string, std::string> parsed;
+    try {
+        nlohmann::json j;
+        f >> j;
+        for (const auto& s : j.at("shards")) {
+            const std::string name = s.at("name").get<std::string>();
+            const std::string path = s.at("path").get<std::string>();
+            std::error_code ec;
+            if (!fs::exists(path, ec) || ec) return false;
+            if (s.contains("size") && fs::file_size(path, ec) != s["size"].get<uint64_t>()) return false;
+            if (!parsed.emplace(name, path).second) return false;   // a shard listed twice is ambiguous
+        }
+    } catch (...) {
+        return false;
+    }
+    manifest_ = std::move(parsed);
+    manifest_active_ = true;
+    shard_to_path_cache_.clear();
+    for (const auto& kv : manifest_) safetensors_index_.index_shard(kv.second);
+    return true;
+}
+
 void M8MultiVolumeManager::register_volume(const std::string& volume_root) {
     if (volume_root.empty()) return;
     std::string norm = volume_root;
@@ -17,6 +44,15 @@ void M8MultiVolumeManager::register_volume(const std::string& volume_root) {
         norm.pop_back();
     }
     volumes_.push_back(norm);
+
+    if (!manifest_active_) {
+        const std::string manifest_path = paths::storage_manifest();
+        if (!manifest_path.empty() && !load_storage_manifest(manifest_path)) {
+            // A configured manifest that cannot be honoured must never degrade into a silent directory scan.
+            throw std::runtime_error("ASEMA storage manifest is configured but invalid or incomplete: " + manifest_path);
+        }
+    }
+    if (manifest_active_) return;
 
     if (fs::exists(norm)) {
         for (const auto& entry : fs::directory_iterator(norm)) {
@@ -48,7 +84,9 @@ bool M8MultiVolumeManager::load_index(const std::string& index_json_path) {
         }
 
         // Automatically index all physical .safetensors shards across all registered volumes
+        // (skipped when a storage manifest names the exact files)
         for (const auto& vol : volumes_) {
+            if (manifest_active_) break;
             if (fs::exists(vol)) {
                 for (const auto& entry : fs::directory_iterator(vol)) {
                     if (entry.is_regular_file() && entry.path().extension() == ".safetensors") {
@@ -70,6 +108,14 @@ std::string M8MultiVolumeManager::resolve_shard_path(const std::string& shard_na
     auto it = shard_to_path_cache_.find(shard_name);
     if (it != shard_to_path_cache_.end()) {
         return it->second;
+    }
+
+    if (manifest_active_) {
+        auto m = manifest_.find(shard_name);
+        if (m != manifest_.end()) {
+            shard_to_path_cache_[shard_name] = m->second;
+            return m->second;
+        }
     }
 
     // Search across registered volumes in order
